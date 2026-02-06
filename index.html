@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TabSplitter | ₹ Edition</title>
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-bg: #F2F2F7;
+            --glass: #ffffff;
+            --system-gray: #8e8e93;
+            --ios-green: #34C759;
+            --ios-red: #FF3B30;
+        }
+
+        body {
+            background-color: var(--ios-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Mode Switcher */
+        .tab-switcher {
+            display: flex;
+            background: #e3e3e8;
+            padding: 4px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 11px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: transparent;
+            color: var(--system-gray);
+        }
+
+        .tab-btn.active {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--glass);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        h2 { font-size: 24px; margin-top: 0; letter-spacing: -0.5px; text-align: center; }
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--system-gray); text-transform: uppercase; margin-bottom: 8px; padding-left: 4px;}
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #efeff4;
+            background: #f9f9f9;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+
+        input:focus { border-color: var(--ios-blue); background: #fff; }
+
+        .entry-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 0.8fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-group { display: flex; gap: 10px; }
+
+        .btn-add {
+            flex: 2;
+            padding: 14px;
+            background: #fff;
+            color: var(--ios-blue);
+            border: 2px dashed #d1d1d6;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-clear {
+            flex: 1;
+            padding: 14px;
+            background: #fff;
+            color: var(--ios-red);
+            border: 1px solid #efeff4;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Results Area */
+        .results-section {
+            background: #1c1c1e;
+            color: #fff;
+            border-radius: 28px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .total-box { text-align: center; margin-bottom: 25px; }
+        .grand-total-label { font-size: 13px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+        .grand-total-val { font-size: 44px; font-weight: 800; display: block; color: var(--ios-green); margin-top: 5px; }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #2c2c2e;
+        }
+
+        .summary-item:last-child { border-bottom: none; }
+
+        .sub-info { font-size: 11px; color: #8e8e93; display: block; margin-top: 2px; }
+
+        .hidden { display: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h2>TabSplitter<span>.</span></h2>
+
+    <div class="tab-switcher">
+        <button id="btn-even" class="tab-btn active" onclick="switchTab('even')">Split Bill</button>
+        <button id="btn-indiv" class="tab-btn" onclick="switchTab('individual')">Individual Pay</button>
+    </div>
+
+    <div id="even-mode" class="card">
+        <label>Total Bill Amount (₹)</label>
+        <input type="number" id="even-bill" placeholder="0.00" oninput="calculateEven()">
+        
+        <label>Tax Amount (₹)</label>
+        <input type="number" id="even-tax" placeholder="0.00" oninput="calculateEven()">
+
+        <label>Number of People</label>
+        <input type="number" id="even-people" value="2" oninput="calculateEven()">
+        
+        <button class="btn-clear" style="width:100%" onclick="resetAll()">Reset All</button>
+    </div>
+
+    <div id="individual-mode" class="card hidden">
+        <label>Total Tax to Split (₹)</label>
+        <input type="number" id="indiv-tax" placeholder="0.00" oninput="calculateIndividual()">
+        
+        <div id="item-entries">
+            <div class="entry-row">
+                <input type="text" placeholder="Name" class="p-name" oninput="calculateIndividual()">
+                <input type="text" placeholder="Item" class="p-item" oninput="calculateIndividual()">
+                <input type="number" placeholder="₹" class="p-price" oninput="calculateIndividual()">
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn-add" onclick="addEntry()">+ Add Item</button>
+            <button class="btn-clear" onclick="resetAll()">Reset</button>
+        </div>
+    </div>
+
+    <div class="results-section">
+        <div class="total-box">
+            <span class="grand-total-label">Grand Total</span>
+            <span class="grand-total-val" id="display-total">₹0.00</span>
+        </div>
+        
+        <div id="summary-list">
+            </div>
+    </div>
+</div>
+
+<script>
+    let currentTab = 'even';
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.getElementById('btn-even').classList.toggle('active', tab === 'even');
+        document.getElementById('btn-indiv').classList.toggle('active', tab === 'individual');
+        
+        document.getElementById('even-mode').classList.toggle('hidden', tab !== 'even');
+        document.getElementById('individual-mode').classList.toggle('hidden', tab !== 'individual');
+        
+        tab === 'even' ? calculateEven() : calculateIndividual();
+    }
+
+    function addEntry() {
+        const container = document.getElementById('item-entries');
+        const div = document.createElement('div');
+        div.className = 'entry-row';
+        div.innerHTML = `
+            <input type="text" placeholder="Name" class="p-name" oninput="calculateIndividual()">
+            <input type="text" placeholder="Item" class="p-item" oninput="calculateIndividual()">
+            <input type="number" placeholder="₹" class="p-price" oninput="calculateIndividual()">
+        `;
+        container.appendChild(div);
+    }
+
+    function resetAll() {
+        if(confirm("Are you sure you want to clear everything?")) {
+            location.reload();
+        }
+    }
+
+    function calculateEven() {
+        const bill = parseFloat(document.getElementById('even-bill').value) || 0;
+        const tax = parseFloat(document.getElementById('even-tax').value) || 0;
+        const people = parseInt(document.getElementById('even-people').value) || 1;
+
+        const total = bill + tax;
+        const share = total / people;
+
+        document.getElementById('display-total').innerText = `₹${total.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+        document.getElementById('summary-list').innerHTML = `
+            <div class="summary-item">
+                <span>Each person pays</span>
+                <strong>₹${share.toLocaleString('en-IN', {minimumFractionDigits: 2})}</strong>
+            </div>
+        `;
+    }
+
+    function calculateIndividual() {
+        const globalTax = parseFloat(document.getElementById('indiv-tax').value) || 0;
+        const rows = document.querySelectorAll('.entry-row');
+        
+        let peopleMap = {}; 
+        let subtotal = 0;
+
+        rows.forEach(row => {
+            const name = row.querySelector('.p-name').value.trim().toLowerCase() || "";
+            const displayName = row.querySelector('.p-name').value.trim() || "Guest";
+            const price = parseFloat(row.querySelector('.p-price').value) || 0;
+
+            if (price > 0 && name !== "") {
+                if (!peopleMap[name]) {
+                    peopleMap[name] = { total: 0, originalName: displayName };
+                }
+                peopleMap[name].total += price;
+                subtotal += price;
+            }
+        });
+
+        const names = Object.keys(peopleMap);
+        const taxPerPerson = names.length > 0 ? globalTax / names.length : 0;
+        const grandTotal = subtotal + globalTax;
+
+        document.getElementById('display-total').innerText = `₹${grandTotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+        
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = '';
+
+        names.forEach(nameKey => {
+            const person = peopleMap[nameKey];
+            const finalAmount = person.total + taxPerPerson;
+            const div = document.createElement('div');
+            div.className = 'summary-item';
+            div.innerHTML = `
+                <div>
+                    <span>${person.originalName}</span>
+                    <span class="sub-info">Food: ₹${person.total.toFixed(2)} + Tax: ₹${taxPerPerson.toFixed(2)}</span>
+                </div>
+                <strong>₹${finalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</strong>
+            `;
+            summaryList.appendChild(div);
+        });
+    }
+
+    calculateEven();
+</script>
+
+</body>
+</html>

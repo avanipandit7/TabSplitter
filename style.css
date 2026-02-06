@@ -1,0 +1,93 @@
+:root {
+  --ios-blue: #007AFF;
+  --ios-bg: #F2F2F7;
+  --glass: rgba(255, 255, 255, 0.7);
+}
+
+body {
+  background: linear-gradient(135deg, #e0eafc, #cfdef3);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.glass-card {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 30px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+h1 { font-weight: 800; font-size: 2rem; margin: 0; }
+h1 span { color: var(--ios-blue); }
+
+.input-field { margin-bottom: 15px; }
+label { display: block; font-size: 0.8rem; font-weight: 600; color: #666; margin-bottom: 5px; }
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.person-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.alc-toggle {
+  background: rgba(0,0,0,0.05);
+  border: none;
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  filter: grayscale(1);
+  transition: 0.3s;
+}
+
+.alc-toggle.active {
+  background: #ffebf0;
+  filter: grayscale(0);
+}
+
+.add-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 15px;
+  border: 2px dashed #ccc;
+  background: transparent;
+  color: var(--ios-blue);
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.summary {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.grand-total h2 {
+  font-size: 2.5rem;
+  margin: 5px 0 20px 0;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 1.1rem;
+}
